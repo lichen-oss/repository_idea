@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljt.dao.ResourceMapper">
+    <select id="findAllResource" parameterType="com.ljt.domain.ResourceVo" resultType="com.ljt.domain.Resource">
+        select * from resource
+        <where>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="url != null">
+                and url = url
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllResourceCategory" resultType="com.ljt.domain.ResourceCategory">
+        select * from resource_category
+    </select>
+
+    <select id="findResourceById" parameterType="int" resultType="com.ljt.domain.Resource">
+        select * from resource where id = #{id}
+    </select>
+    <insert id="saveResource" parameterType="com.ljt.domain.Resource">
+        insert  into resource values (null,#{name},#{url},#{categoryId},#{description},#{createdTime},#{updatedTime},#{createdBy},#{updatedBy})
+    </insert>
+
+    <update id="updateResource" parameterType="com.ljt.domain.Resource">
+        update resource set name = #{name},url = #{url},category_id = #{categoryId},description=#{description},updated_time=#{updatedTime},updated_by = #{updatedBy} where id = #{id}
+    </update>
+
+    <delete id="deleteResource" parameterType="int">
+        delete from resource where id =#{id}
+    </delete>
+</mapper>

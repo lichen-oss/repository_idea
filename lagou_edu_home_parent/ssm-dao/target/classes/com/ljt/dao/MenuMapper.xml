@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljt.dao.MenuMapper">
+    <select id="findSubMenuListByPid" resultMap="MenuResult">
+        select * from menu where parent_id = #{pid}
+    </select>
+    <resultMap id="MenuResult" type="com.ljt.domain.Menu">
+        <id property="id" column="id"></id>
+        <result column="href" property="href"></result>
+        <result column="icon" property="icon"></result>
+        <result column="name" property="name"></result>
+        <result column="parent_id" property="parentId"></result>
+        <result column="description" property="description"></result>
+        <result column="orderNum" property="order_num"></result>
+        <result column="shown" property="shown"></result>
+        <result column="created_time" property="createdTime"></result>
+        <result column="updated_time" property="updatedTime"></result>
+        <result column="created_by" property="createdBy"></result>
+        <result column="updated_by" property="updatedBy"></result>
+        <collection property="subMenuList" column="id" select="findSubMenuListByPid" ofType="com.lagou.domain.Menu"></collection>
+        
+    </resultMap>
+
+    <select id="findAllMenu" resultType="com.ljt.domain.Menu">
+        select * from menu
+    </select>
+
+    <select id="findMenuById" resultType="com.ljt.domain.Menu" parameterType="int">
+        select * from menu where id = #{id}
+    </select>
+
+    <insert id="saveMenu" parameterType="com.ljt.domain.Menu">
+        insert into menu values (null,#{parentId},#{href},#{icon},#{name},#{description},#{orderNum},#{shown},#{level},#{createdTime},#{updatedTime},#{createdBy},#{updatedBy})
+    </insert>
+
+    <update id="updateMenu" parameterType="com.ljt.domain.Menu">
+        update menu set name = #{name},href=#{href},parent_id=#{parentId},icon=#{icon},description = #{description},order_num=#{orderNum},shown=#{shown},level=#{level},created_time=#{createdTime},updated_time=#{updatedTime},created_by=#{createdBy},updated_by=#{updatedBy} where id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljt.dao.UserMapper">
+    <select id="findAllUserByPage" resultType="com.ljt.domain.User" parameterType="com.ljt.domain.UserVo">
+        select id,name,portrait,phone,password,create_time,status from user
+        <where>
+            <if test="true">
+                and is_del != 1
+            </if>
+            <if test="username != null">
+                and name = #{username}
+            </if>
+            <if test="startCreateTime != null and endCreateTime != null">
+                and create_time between #{startCreateTime} and #{endCreateTime}
+            </if>
+        </where>
+    </select>
+
+    <!-- 修改用户状态 -->
+    <update id="updateUserStatus">
+        UPDATE USER SET STATUS = #{status} where id = #{id};
+    </update>
+
+    <select id="login" parameterType="com.ljt.domain.User" resultType="com.ljt.domain.User">
+        select * from user where phone = #{phone}
+    </select>
+
+    <select id="findUserRelationRoleById" resultType="com.ljt.domain.Role">
+        select r.id,r.name,r.code,r.description from user_role_relation ur left join roles r on ur.role_id = r.id  where ur.user_id = #{id}
+    </select>
+
+    <delete id="deleteUserContextRole" parameterType="int">
+        delete from user_role_relation where user_id = #{userId}
+    </delete>
+
+    <insert id="userContextRole" parameterType="com.ljt.domain.User_Role_relation">
+        insert into user_role_relation values (null,#{userId},#{roleId},#{createdTime},#{updatedTime},#{createdBy},#{updatedby})
+    </insert>
+
+    <select id="findParentMenuByRoleId" parameterType="java.util.List" resultType="com.ljt.domain.Menu">
+        select distinct m.* from roles r inner join role_menu_relation rm on r.id = rm.role_id inner join menu m on m.id
+        = rm.menu_id
+        where m.parent_id = -1 and r.id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by m.id
+    </select>
+
+    <select id="findSubMenuByPid" parameterType="int" resultType="com.ljt.domain.Menu">
+        select * from menu where parent_id = #{pid}
+    </select>
+
+    <select id="findResourceByRoleId" parameterType="java.util.List" resultType="com.ljt.domain.Resource">
+        SELECT
+        DISTINCT rc.*
+        FROM roles r INNER JOIN role_resource_relation rrr ON r.id =
+        rrr.role_id
+        INNER JOIN resource rc ON rrr.resource_id = rc.id WHERE r.id IN
+        <foreach item="item" index="index" collection="list" open="("
+                 separator="," close=")">
+            #{item}
+        </foreach>
+        GROUP BY rc.id;
+    </select>
+</mapper>

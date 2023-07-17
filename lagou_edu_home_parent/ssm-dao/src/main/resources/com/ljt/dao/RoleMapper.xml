@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljt.dao.RoleMapper">
+    <select id="findAllRole" parameterType="com.ljt.domain.Role" resultType="com.ljt.domain.Role">
+        select id,
+        CODE,
+        NAME,
+        description,
+        created_time,
+        updated_time,
+        created_by,
+        updated_by
+        from roles
+        <where>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+        </where>
+    </select>
+
+    <insert id="saveRole" parameterType="com.ljt.domain.Role">
+        insert into roles
+        values (null,#{code},#{name},#{description},#{createdTime},#{updatedTime},#{updatedTime},#{updatedBy})
+    </insert>
+
+    <update id="updateRole" parameterType="com.ljt.domain.Role">
+        update roles SET name = #{name} ,code = #{code},updated_time = #{updatedTime},description = #{description}
+WHERE id = #{id}
+    </update>
+
+    <select id="findMenuByRoleId" resultType="string" parameterType="int">
+        select m.id from roles r left join role_menu_relation rmr on r.id = rmr.role_id   left join menu m on m.id = rmr.menu_id where role_id = #{id};
+    </select>
+
+    <delete id="deleteRoleContextMenu" parameterType="int">
+        delete from role_menu_relation where role_id = #{id}
+    </delete>
+
+    <insert id="RoleContextMenu" parameterType="com.ljt.domain.Role_menu_relation">
+        insert into role_menu_relation values(null,#{menuId},#{roleId},#{createdTime},#{updatedTime},#{createdBy},#{updatedby});
+    </insert>
+
+    <delete id="deleteRole" parameterType="int">
+        delete from roles where id = #{id}
+    </delete>
+</mapper>
